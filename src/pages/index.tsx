@@ -3,6 +3,7 @@ import Head from "next/head";
 import styles from "./index.module.css";
 
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { Button } from "@mantine/core";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
@@ -20,8 +21,15 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <main>
           <div>
-            {!user.isSignedIn && <SignInButton />}
-            {!!user.isSignedIn && <SignOutButton />}
+            {user.isSignedIn ? (
+              <SignOutButton>
+                <Button variant="outline">Sign out</Button>
+              </SignOutButton>
+            ) : (
+              <SignInButton>
+                <Button variant="outline">Sign In</Button>
+              </SignInButton>
+            )}
           </div>
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
         </main>
