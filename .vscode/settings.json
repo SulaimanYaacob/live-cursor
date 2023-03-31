@@ -1,0 +1,38 @@
+{
+	"editor.formatOnPaste": true,
+	"editor.formatOnSave": true,
+	"editor.wordWrap": "off",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true,
+		"source.fixAll.format": true,
+		"source.organizeImports": true
+	},
+	"cSpell.words": [
+		"Asatizah",
+		"Azatizah",
+		"cuid",
+		"iqra",
+		"lightgray",
+		"mantine",
+		"manzil",
+		"plopfile",
+		"POSTHOG",
+		"propfile",
+		"reduxjs",
+		"Roboto",
+		"sendgrid",
+		"superjson",
+		"surahs",
+		"Talaqqi",
+		"tiktok",
+		"toyyibpay",
+		"trpc",
+		"upsert",
+		"uthmani",
+		"zustand"
+	],
+	"cSpell.enableFiletypes": [
+		"prisma"
+	],
+	"svg.preview.background": "white"
+}

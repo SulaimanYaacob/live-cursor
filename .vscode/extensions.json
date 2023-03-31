@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"streetsidesoftware.code-spell-checker",
+		"bierner.color-info",
+		"editorconfig.editorconfig",
+		"dbaeumer.vscode-eslint",
+		"aaron-bond.better-comments"
+	]
+}
