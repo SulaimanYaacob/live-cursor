@@ -28,7 +28,7 @@ const CreatePostWizard = () => {
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
       setInput("");
-      ctx.posts.getAll.invalidate();
+      void ctx.posts.getAll.invalidate();
     },
   });
 
@@ -103,7 +103,9 @@ const PostView = () => {
               <Stack spacing={0}>
                 <Group spacing="5px">
                   <Text fw={500} c="blue">
-                    {`@${fullpost.user.username}`}
+                    {fullpost?.user?.username
+                      ? `@${fullpost.user.username}`
+                      : ""}
                   </Text>
                   <Text c="gray">·</Text>
                   <Text c="gray">

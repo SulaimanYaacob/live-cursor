@@ -1,5 +1,5 @@
 import { AppShell } from "@mantine/core";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 function AppLayout({ children }: { children: ReactNode }) {
   return (

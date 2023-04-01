@@ -65,10 +65,12 @@ export const postsRouter = createTRPCRouter({
           },
         });
         return post;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         throw new TRPCError({
-          code: error.code || "INTERNAL_SERVER_ERROR",
-          message: error.message,
+          code: "INTERNAL_SERVER_ERROR",
+          message: errorMessage,
         });
       }
     }),
