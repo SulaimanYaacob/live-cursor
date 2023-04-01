@@ -1,50 +1,127 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import { AiOutlineSend } from "react-icons/ai";
 
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { Avatar, Button, Center, Stack, Text, TextInput } from "@mantine/core";
-import { api, RouterOutputs } from "~/utils/api";
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Center,
+  Group,
+  Loader,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useState } from "react";
+import { api } from "~/utils/api";
 import AppLayout from "./components/AppLayout/AppLayout";
 
 const CreatePostWizard = () => {
+  const [input, setInput] = useState("");
   const { user } = useUser();
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      ctx.posts.getAll.invalidate();
+    },
+  });
 
   if (!user) return null;
 
   return (
-    <Avatar
-      radius="lg"
-      size="sm"
-      src={user.profileImageUrl}
-      alt="Profile Image"
-    />
+    <Stack>
+      <TextInput
+        placeholder="What's on your mind?"
+        radius={0}
+        value={input}
+        onChange={(e) => setInput(e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (input !== "") mutate({ content: input });
+          }
+        }}
+        disabled={isPosting}
+        rightSection={
+          isPosting ? (
+            <Loader size="sm" />
+          ) : (
+            <ActionIcon
+              color={input ?? "blue"}
+              variant="transparent"
+              onClick={() => mutate({ content: input })}
+              radius={0}
+              disabled={input === ""}
+            >
+              <AiOutlineSend size="18px" />
+            </ActionIcon>
+          )
+        }
+      />
+    </Stack>
   );
 };
 
-type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+const PostView = () => {
+  const { data, isLoading } = api.posts.getAll.useQuery();
+  dayjs.extend(relativeTime);
 
-const PostView = (props: PostWithUser) => {
-  const { post, user } = props;
-  console.log(props.post.content);
+  if (isLoading)
+    return (
+      <Loader variant="bars" pos="absolute" top="35vh" w="100%" h="100%" />
+    );
+
+  if (!data)
+    return (
+      <Text c="red" align="center">
+        No data
+      </Text>
+    );
 
   return (
-    <Stack key={post.id} p="lg" sx={{ borderBottom: "1px solid white" }}>
-      <div>
-        <Text c="violet">{post.content}</Text>
-        <Text c="blue">User: {user?.id}</Text>
-      </div>
-    </Stack>
+    <ScrollArea h="500px">
+      {data.map((fullpost) => {
+        return (
+          <Stack
+            key={fullpost.post.id}
+            py="xs"
+            px="lg"
+            sx={{
+              borderBottom: "1px solid white",
+              borderRight: "1px solid white",
+              borderLeft: "1px solid white",
+            }}
+          >
+            <Group noWrap>
+              <Avatar radius="xl" src={fullpost.user.profilePicture} />
+              <Stack spacing={0}>
+                <Group spacing="5px">
+                  <Text fw={500} c="blue">
+                    {`@${fullpost.user.username}`}
+                  </Text>
+                  <Text c="gray">·</Text>
+                  <Text c="gray">
+                    {dayjs(fullpost.post.createdAt).fromNow()}
+                  </Text>
+                </Group>
+                <Text c="gray.0">{fullpost.post.content}</Text>
+              </Stack>
+            </Group>
+          </Stack>
+        );
+      })}
+    </ScrollArea>
   );
 };
 
 const Home: NextPage = () => {
   const user = useUser();
-  const { data, isLoading } = api.posts.getAll.useQuery();
-
-  if (isLoading) return <div>Loading...</div>;
-
-  if (!data) return <div>No data</div>;
-
   //! Note that this is not a good way to do this. This is just for demo purposes.
   return (
     <AppLayout>
@@ -54,60 +131,35 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Center h="100%">
-        <Stack
-          justify="space-between"
-          w="100%"
-          h="100%"
-          maw="600px"
-          sx={{ border: "1px solid white" }}
-        >
-          <Stack spacing="0">
+        <Stack justify="space-between" w="100%" h="85%" maw="500px">
+          <Stack pos="relative" spacing="0">
             {user.isSignedIn ? (
               <SignOutButton>
                 <Button
-                  leftIcon={<CreatePostWizard />}
+                  leftIcon={
+                    <Avatar
+                      radius="lg"
+                      size="sm"
+                      src={user.user.profileImageUrl}
+                      alt="Profile Image"
+                    />
+                  }
                   color="gray.0"
                   radius="0"
                   variant="outline"
-                  sx={{
-                    borderRight: "none",
-                    borderLeft: "none",
-                  }}
                 >
                   Sign out
                 </Button>
               </SignOutButton>
             ) : (
               <SignInButton>
-                <Button
-                  color="gray.0"
-                  radius="0"
-                  variant="outline"
-                  sx={{
-                    borderRight: "none",
-                    borderLeft: "none",
-                  }}
-                >
+                <Button color="gray.0" radius="0" variant="outline">
                   Sign In
                 </Button>
               </SignInButton>
             )}
-            <>
-              {[...data, ...data]?.map((fullPost) => {
-                return <PostView {...fullPost} key={fullPost.post.id} />;
-              })}
-            </>
-          </Stack>
-          <Stack>
-            <TextInput
-              placeholder="What's on your mind?"
-              radius={0}
-              rightSection={
-                <Button radius={0} mr="xl" compact>
-                  Enter
-                </Button>
-              }
-            />
+            <PostView />
+            <CreatePostWizard />
           </Stack>
         </Stack>
       </Center>
