@@ -1,11 +1,15 @@
-import { Box, ScrollArea, Text } from "@mantine/core";
+import { Box, ScrollArea, Stack, Text, TextInput, Title } from "@mantine/core";
 import {
   RoomProvider,
+  useMutation,
   useOthers,
+  useStorage,
   useUpdateMyPresence,
 } from "liveblocks.config";
 import { type ReactNode } from "react";
 import Cursor from "~/components/Cursor";
+
+const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 const LivePresence = () => {
   const updateMyPresence = useUpdateMyPresence();
@@ -24,6 +28,7 @@ const LivePresence = () => {
             key={connectionId}
             x={presence.cursor.x}
             y={presence.cursor.y}
+            color={COLORS[connectionId % COLORS.length] as string}
           />
         ) : null
       )}
@@ -48,12 +53,53 @@ const OtherPresences = () => {
   );
 };
 
+const Storage = () => {
+  const scientist = useStorage((root) => root.scientist);
+  const updateName = useMutation(({ storage }, nameType, newName) => {
+    const mutableScientist = storage.get("scientist");
+    mutableScientist.set(nameType, newName);
+  }, []);
+
+  if (!scientist) return null;
+
+  return (
+    <Stack pos="absolute" top="30%" right="40%" left="40%">
+      <Title order={3} align="center" c="blue">
+        Input Live Chat!
+      </Title>
+      <TextInput
+        placeholder="First User"
+        value={scientist.firstName}
+        onChange={(e) => {
+          updateName("firstName", e.target.value);
+        }}
+      />
+      <TextInput
+        placeholder="Second User"
+        value={scientist.lastName}
+        onChange={(e) => {
+          updateName("lastName", e.target.value);
+        }}
+      />
+    </Stack>
+  );
+};
+
 const CursorRoom = ({ children }: { children: ReactNode }) => {
-  console.log("This => ", process.env.LIVEBLOCKS_PUBLIC_KEY);
   return (
     <ScrollArea h="100vh">
       <Box bg="black" sx={{ overflow: "hidden" }}>
-        <RoomProvider id="cursor-room" initialPresence={{ cursor: null }}>
+        <RoomProvider
+          id="cursor-room"
+          initialPresence={{ cursor: null }}
+          // initialStorage={{
+          //   scientist: new LiveObject({
+          //     firstName: "Roberto",
+          //     lastName: "Ferrucci",
+          //   }),
+          // }}
+        >
+          <Storage />
           <LivePresence />
           <OtherPresences />
         </RoomProvider>
