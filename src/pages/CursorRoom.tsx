@@ -45,7 +45,7 @@ const OtherPresences = () => {
       top="5%"
       pos="absolute"
       c="red"
-      p="xl"
+      m="xl"
       align="center"
     >
       There are {others.length} other users with you right now!
@@ -63,7 +63,7 @@ const Storage = () => {
   if (!scientist) return null;
 
   return (
-    <Stack pos="absolute" top="30%" right="40%" left="40%">
+    <Stack spacing="xl" pos="absolute" top="25%" left="35%" right="35%">
       <Title order={3} align="center" c="blue">
         Input Live Chat!
       </Title>
