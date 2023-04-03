@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <AppShell padding="xl" bg="dark.8">
+    <AppShell pos="absolute" padding="xl" bg="dark.8">
       {children}
     </AppShell>
   );

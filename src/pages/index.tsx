@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Link from "next/link";
 import { useState } from "react";
 import { api } from "~/utils/api";
 import AppLayout from "./components/AppLayout/AppLayout";
@@ -133,6 +134,17 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Center h="100%">
+        <Text
+          td="underline"
+          top="5%"
+          pos="absolute"
+          href="/CursorRoom"
+          color="indigo"
+          fw="500"
+          component={Link}
+        >
+          Check Live Cursor!
+        </Text>
         <Stack justify="space-between" w="100%" h="85%" maw="500px">
           <Stack pos="relative" spacing="0">
             {user.isSignedIn ? (
